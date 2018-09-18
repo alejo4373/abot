@@ -4,46 +4,54 @@ const cms = require('./api.js');
 class Bot {
   constructor() {
     this.name = '';
-    this.location = {}
-    this.state = {}
+    this.location = {};
+    this.state = {};
     this.adjacentNodes = [];
+    this.target = null;
+    this.tasks = [this.register()];
   }
 
-  register(callback) {
-    cms.requestRegister((data) => {
-      this.location = {
-        x: data.status.location.x,
-        y: data.status.location.x
-      }
-      this.state = data;
-      this.name = data.status.id;
-      console.log('Registered');
-      callback(data);
-    })
+  async register() {
+    let data = await cms.requestRegister();
+    this.location = {
+      x: data.status.location.x,
+      y: data.status.location.y
+    }
+    this.state = data;
+    this.name = data.status.id;
+    console.log('Registered ==>', this);
+    this.tasks.push(this.scan());
   };
 
-  scan(callback) {
-    cms.requestScan(this.name, (data) => {
-      this.adjacentNodes = data.nodes;
-      callback(data);
-    })
+  async scan() {
+    let data = await cms.requestScan(this.name)
+    this.adjacentNodes = data.nodes;
+    this.target = this.findClosestNode()
+    console.log('Scan ==>', this);
+    this.tasks.push(this.move());
   };
 
-  move(path, callback) {
-    let promises = [];
-    path.forEach(step => {
-      promises.push(cms.requestMove(step.x, step.y, this.name))
-    })
+  async move() {
+    let path;
+    if (this.target) {
+      path = this.generatePathTowards(this.target)
+      let promises = [];
+      path.forEach(step => {
+        promises.push(cms.requestMove(step.x, step.y, this.name))
+      })
 
-    Promise.all(promises).then(res => {
+      let res = await Promise.all(promises)
       let finalLocation = res[res.length - 1];
       this.location = finalLocation;
-      console.log('res=>', res)
-      callback(finalLocation)
-    })
-    .catch(err => {
-      console.log('[Error] => Promise.all', err)
-    })
+      console.log('finalLocation =>', finalLocation)
+      // this.tasks.push(this.claimNodes())
+
+    } else { //if no target then move vertically one square x + 1
+      let res = await cms.requestMove(this.location.x + 1, this.location.y)
+      this.tasks.push(this.scan())
+    }
+
+
   };
 
   // Brute force path generation, not exploiting the fact the bot
