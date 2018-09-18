@@ -6,7 +6,7 @@ class Bot {
     this.name = '';
     this.location = {};
     this.state = {};
-    this.adjacentNodes = [];
+    this.inRangeNodes = [];
     this.target = null;
     this.tasks = [this.register()];
   }
@@ -19,15 +19,21 @@ class Bot {
     }
     this.state = data;
     this.name = data.status.id;
-    console.log('Registered ==>', this);
     this.tasks.push(this.scan());
   };
 
   async scan() {
     let data = await cms.requestScan(this.name)
-    this.adjacentNodes = data.nodes;
-    this.target = this.findClosestNode()
-    console.log('Scan ==>', this);
+    if (data.nodes.length) {
+      this.inRangeNodes = data.nodes;
+
+      // I could claim at least 3 nodes in my range but I think it will be better
+      // to claim closest node and then start moving towards it
+      this.target = this.findClosestNode()
+      this.claimNode(this.target)
+      console.log('inRangeNodes =>', this.inRangeNodes)
+    }
+    // Regardless of if we have a target node move!!!
     this.tasks.push(this.move());
   };
 
@@ -36,6 +42,9 @@ class Bot {
     if (this.target) {
       path = this.generatePathTowards(this.target)
       let promises = [];
+      console.log('botLocation ==>', this.location)
+      console.log('inRangeNodes ==>', this.inRangeNodes);
+      console.log('path ==>', path)
       path.forEach(step => {
         promises.push(cms.requestMove(step.x, step.y, this.name))
       })
@@ -44,9 +53,9 @@ class Bot {
       let finalLocation = res[res.length - 1];
       this.location = finalLocation;
       console.log('finalLocation =>', finalLocation)
-      // this.tasks.push(this.claimNodes())
+      this.tasks.push(this.claimNode())
 
-    } else { //if no target then move vertically one square x + 1
+    } else { //if no target then move vertically one square x + 1, like that for now
       let res = await cms.requestMove(this.location.x + 1, this.location.y)
       this.tasks.push(this.scan())
     }
@@ -94,10 +103,9 @@ class Bot {
   }
 
 
-  claimNodes(callback) {
-    cms.requestClaim(this.name, (data) => {
-      callback(data);
-    })
+  async claimNode(node) {
+    let claimResponse = await cms.requestClaim(this.name, node)
+    console.log('claimResponse =>', claimResponse)
   };
 
   findClosestNode() {
@@ -105,7 +113,7 @@ class Bot {
     let botX = this.location.x
     let botY = this.location.y
 
-    let nodes = this.adjacentNodes;
+    let nodes = this.inRangeNodes;
     let closest = nodes[0];
     nodes.forEach(node => {
       let nodeX = node.location.x;

@@ -18,14 +18,9 @@ const requestScan = (callsign) => {
   return sendRequest('/scan', { callsign })
 }
 
-const requestClaim = (callsign, callback) => {
-  sendRequest('/claim', { callsign })
-    .then(res => {
-      callback(res)
-    })
-    .catch(err => {
-      console.log('[Error] /move', err);
-    })
+const requestClaim = (callsign, node) => {
+  console.log('claiming node:', node)
+  return sendRequest('/claim', { callsign: callsign, node: node.id })
 }
 
 module.exports = {
