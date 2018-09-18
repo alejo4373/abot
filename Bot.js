@@ -29,16 +29,34 @@ class Bot {
     })
   };
 
-  move(x, y) {
-    return cms.requestMove(x, y, this.name)
+  move(path, callback) {
+    let promises = [];
+    path.forEach(step => {
+      promises.push(cms.requestMove(step.x, step.y, this.name))
+    })
+
+    Promise.all(promises).then(res => {
+      let finalLocation = res[res.length - 1];
+      this.location = finalLocation;
+      console.log('res=>', res)
+      callback(finalLocation)
+    })
+    .catch(err => {
+      console.log('[Error] => Promise.all', err)
+    })
   };
 
+  // Brute force path generation, not exploiting the fact the bot
+  // can move diagonally.
   generatePathTowards(node) {
     // Bot's current location
     let botX = this.location.x
     let botY = this.location.y
+
+    // Destination node's location
     let nodeX = node.location.x;
     let nodeY = node.location.y;
+
     let path = [];
 
     //If node is above bot, rise botX
@@ -86,7 +104,7 @@ class Bot {
       let nodeY = node.location.y;
       let absoluteDistance = (nodeX - botX) - (nodeY - botY);
       if (absoluteDistance >= -2 || absoluteDistance <= 2) {
-          closest = node;
+        closest = node;
       }
     })
     return closest;
