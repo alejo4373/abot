@@ -1,13 +1,4 @@
 #!/bin/bash
 
-if [ -z "$SERVER_HOST" ]
-then
- export SERVER_HOST="localhost"
-fi
-
-if [ -z "$SERVER_PORT" ]
-then
-  export SERVER_PORT="5000"
-fi
-
-node index.js
+## Start server on new terminal and release
+xterm -hold -e "cd $GOPATH/src/github.com/HeadlightLabs/Tournament-API/ && ./run.sh " &  

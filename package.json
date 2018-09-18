@@ -1,0 +1,37 @@
+{
+  "name": "mine",
+  "version": "1.0.0",
+  "description": "This is a bot that that doesn't know how to do anything on its own, it has to talk to a web server to ask for instructions all the time.",
+  "main": "index.js",
+  "scripts": {
+    "start": "./start.sh; sleep 3; node index.js",
+    "test": "./start.sh && jest --watch"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "verbose": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alejo4373/abot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alejo4373/abot/issues"
+  },
+  "homepage": "https://github.com/alejo4373/abot#readme",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "dotenv": "^6.0.0"
+  }
+}
