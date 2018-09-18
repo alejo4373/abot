@@ -3,8 +3,7 @@ const { sendRequest } = require('./sendRequest');
 const requestRegister = async (callback) => {
   try {
     const res = await sendRequest('/register', { callsign: '' })
-    let data = JSON.parse(res)
-    callback(data);
+    callback(res);
   } catch (err) {
     console.log('[Error] /register', err);
   }
@@ -23,8 +22,7 @@ const requestMove = (x, y, callsign) => {
 const requestScan = (callsign, callback) => {
   sendRequest('/scan', { callsign })
     .then(res => {
-      let data = JSON.parse(res)
-      callback(data)
+      callback(res)
     })
     .catch(err => {
       console.log('[Error] /move', err);
@@ -34,8 +32,7 @@ const requestScan = (callsign, callback) => {
 const requestClaim = (callsign, callback) => {
   sendRequest('/claim', { callsign })
     .then(res => {
-      let data = JSON.parse(res)
-      callback(data)
+      callback(res)
     })
     .catch(err => {
       console.log('[Error] /move', err);
