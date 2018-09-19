@@ -53,7 +53,7 @@ class Bot {
         logger.log('r ====>', r);
       })
       let finalLocation = res[res.length - 1];
-      this.location = finalLocation.location;
+      this.location = finalLocation.status.location;
       logger.log('finalLocation =>', this.location)
 
     } else { //if no target then move vertically one square x + 1, like that for now
