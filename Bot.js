@@ -114,16 +114,23 @@ class Bot {
     let botY = this.location.y
 
     let nodes = this.inRangeNodes;
-    let closest = nodes[0];
+
+    let closestNode = null;
+    let leastDistance = null;
+
     nodes.forEach(node => {
       let nodeX = node.location.x;
       let nodeY = node.location.y;
-      let absoluteDistance = (nodeX - botX) - (nodeY - botY);
-      if (absoluteDistance >= -2 || absoluteDistance <= 2) {
-        closest = node;
+      let nodeDistance = Math.abs((nodeX - botX) + (nodeY - botY));
+      if (leastDistance === null) {
+        leastDistance = nodeDistance;
+        closestNode = node;
+      } else if (nodeDistance <= leastDistance) {
+        leastDistance = nodeDistance
+        closestNode = node;
       }
     })
-    return closest;
+    return closestNode;
   }
 
   release() { };
