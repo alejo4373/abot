@@ -19,6 +19,7 @@ class Bot {
     }
     this.state = data;
     this.name = data.status.id;
+    logger.log('botLocation ==>', this.location)
     this.tasks.push(this.scan());
   };
 
@@ -30,8 +31,8 @@ class Bot {
       // I could claim at least 3 nodes in my range but I think it will be better
       // to claim closest node and then start moving towards it
       this.target = this.findClosestNode()
-      this.claimNode(this.target)
       logger.log('inRangeNodes =>', this.inRangeNodes)
+      this.claimNode(this.target)
     }
     // Regardless of if we have a target node move!!!
     this.tasks.push(this.move());
@@ -42,18 +43,18 @@ class Bot {
     if (this.target) {
       path = this.generatePathTowards(this.target)
       let promises = [];
-      logger.log('botLocation ==>', this.location)
-      logger.log('inRangeNodes ==>', this.inRangeNodes);
-      logger.log('path ==>', path)
       path.forEach(step => {
         promises.push(cms.requestMove(step.x, step.y, this.name))
       })
 
       let res = await Promise.all(promises)
+      logger.log('res ======');
+      res.forEach(r => {
+        logger.log('r ====>', r);
+      })
       let finalLocation = res[res.length - 1];
-      this.location = finalLocation;
-      logger.log('finalLocation =>', finalLocation)
-      this.tasks.push(this.claimNode())
+      this.location = finalLocation.location;
+      logger.log('finalLocation =>', this.location)
 
     } else { //if no target then move vertically one square x + 1, like that for now
       let res = await cms.requestMove(this.location.x + 1, this.location.y)
@@ -121,7 +122,7 @@ class Bot {
     nodes.forEach(node => {
       let nodeX = node.location.x;
       let nodeY = node.location.y;
-      let nodeDistance = Math.abs((nodeX - botX) + (nodeY - botY));
+      let nodeDistance = Math.abs((nodeX - botX)) + Math.abs((nodeY - botY));
       if (leastDistance === null) {
         leastDistance = nodeDistance;
         closestNode = node;
