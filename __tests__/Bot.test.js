@@ -3,22 +3,29 @@ const Bot = require('../Bot');
 describe('Bot class', () => {
   it('finds closest node to bot', () => {
     let bot = new Bot()
-    bot.location = { x: 22, y: 14 };
-    bot.inRangeNodes = [{
-      id: '692422d0-d553-48eb-b302-6b72fd928a4d',
-      location: { x: 22, y: 13 },
-      value: 18,
-      claimed: false
-    },
-    {
-      id: 'bf436066-a75d-4833-91c5-2e63d5c146bc',
-      location: { x: 25, y: 18 },
-      value: 15,
-      claimed: false
-    }]
-
+    bot.location = { x: 15, y: 78 };
+    bot.inRangeNodes = [
+      {
+        id: '985c7d4f-127b-4b1e-902d-c06e2e85a273',
+        location: { x: 17, y: 81 },
+        value: 5,
+        claimed: false
+      },
+      {
+        id: 'bd40498c-a2be-429d-a0ca-06b0fa1635d3',
+        location: { x: 14, y: 81 },
+        value: 16,
+        claimed: false
+      },
+      {
+        id: 'e9283cfd-b148-422f-a50d-e9b53d31e6f0',
+        location: { x: 15, y: 81 },
+        value: 11,
+        claimed: false
+      }
+    ]
     let closest = bot.findClosestNode();
-    expect(closest).toBe(bot.inRangeNodes[0])
+    expect(closest).toBe(bot.inRangeNodes[2])
   })
 
   it('return appropriate path to walk towards a target node', () => {
@@ -42,5 +49,9 @@ describe('Bot class', () => {
 
     let path = bot.generatePathTowards(bot.target)
     expect(path).toEqual(appropriatePath);
+  })
+
+  it('network response location is updated after a move request', () => {
+
   })
 })
