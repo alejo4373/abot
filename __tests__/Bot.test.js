@@ -21,6 +21,26 @@ describe('Bot class', () => {
     expect(closest).toBe(bot.inRangeNodes[0])
   })
 
-  it('finds closest path between two nodes in the grid', () => {
+  it('return appropriate path to walk towards a target node', () => {
+    let bot = new Bot();
+    bot.location = { x: 88, y: 97 };
+    bot.target = {
+      id: '08a1838a-b887-4270-88f2-feb170b03993',
+      location: { x: 93, y: 96 },
+      value: 12,
+      claimed: false
+    }
+
+    let appropriatePath = [
+      { x: 89, y: 97 },
+      { x: 90, y: 97 },
+      { x: 91, y: 97 },
+      { x: 92, y: 97 },
+      { x: 93, y: 97 },
+      { x: 93, y: 96 }
+    ]
+
+    let path = bot.generatePathTowards(bot.target)
+    expect(path).toEqual(appropriatePath);
   })
 })
