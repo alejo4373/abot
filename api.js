@@ -10,7 +10,7 @@ const requestMove = (x, y, callsign) => {
     x: x + '',
     y: y + ''
   }
-  console.log('requestMove => ', 'x:', x, 'y:', y)
+  logger.log('requestMove => ', 'x:', x, 'y:', y)
   return sendRequest('/move', payload)
 }
 
@@ -19,7 +19,7 @@ const requestScan = (callsign) => {
 }
 
 const requestClaim = (callsign, node) => {
-  console.log('claiming node:', node)
+  logger.log('claiming node:', node)
   return sendRequest('/claim', { callsign: callsign, node: node.id })
 }
 

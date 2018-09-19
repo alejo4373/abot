@@ -31,7 +31,7 @@ class Bot {
       // to claim closest node and then start moving towards it
       this.target = this.findClosestNode()
       this.claimNode(this.target)
-      console.log('inRangeNodes =>', this.inRangeNodes)
+      logger.log('inRangeNodes =>', this.inRangeNodes)
     }
     // Regardless of if we have a target node move!!!
     this.tasks.push(this.move());
@@ -42,9 +42,9 @@ class Bot {
     if (this.target) {
       path = this.generatePathTowards(this.target)
       let promises = [];
-      console.log('botLocation ==>', this.location)
-      console.log('inRangeNodes ==>', this.inRangeNodes);
-      console.log('path ==>', path)
+      logger.log('botLocation ==>', this.location)
+      logger.log('inRangeNodes ==>', this.inRangeNodes);
+      logger.log('path ==>', path)
       path.forEach(step => {
         promises.push(cms.requestMove(step.x, step.y, this.name))
       })
@@ -52,7 +52,7 @@ class Bot {
       let res = await Promise.all(promises)
       let finalLocation = res[res.length - 1];
       this.location = finalLocation;
-      console.log('finalLocation =>', finalLocation)
+      logger.log('finalLocation =>', finalLocation)
       this.tasks.push(this.claimNode())
 
     } else { //if no target then move vertically one square x + 1, like that for now
@@ -105,7 +105,7 @@ class Bot {
 
   async claimNode(node) {
     let claimResponse = await cms.requestClaim(this.name, node)
-    console.log('claimResponse =>', claimResponse)
+    logger.log('claimResponse =>', claimResponse)
   };
 
   findClosestNode() {

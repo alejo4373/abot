@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/alejo4373/abot#readme",
   "devDependencies": {
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "tracer": "^0.9.1"
   },
   "dependencies": {
     "dotenv": "^6.0.0"
