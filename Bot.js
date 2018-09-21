@@ -42,18 +42,14 @@ class Bot {
     let path;
     if (this.target) {
       path = this.generatePathTowards(this.target)
-      let promises = [];
-      path.forEach(step => {
-        promises.push(cms.requestMove(step.x, step.y, this.name))
-      })
+      let walked = [];
 
-      let res = await Promise.all(promises)
-      logger.log('res ======');
-      res.forEach(r => {
-        logger.log('r ====>', r);
-      })
-      let finalLocation = res[res.length - 1];
-      this.location = finalLocation.status.location;
+      //Asynchronous Loop
+      for (let step of path) {
+        let crrStep = await cms.requestMove(step.x, step.y, this.name)
+        this.location = crrStep.status.location
+        walked.push(crrStep)
+      }
       logger.log('finalLocation =>', this.location)
 
     } else { //if no target then move vertically one square x + 1, like that for now
@@ -65,7 +61,8 @@ class Bot {
   };
 
   // Brute force path generation, not exploiting the fact the bot
-  // can move diagonally.
+  // can move diagonally. 
+  // TODO: If equidistant nodes then decide on mining potential
   generatePathTowards(node) {
     // Bot's current location
     let botX = this.location.x
