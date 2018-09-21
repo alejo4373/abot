@@ -8,7 +8,9 @@ then
 fi
 
 ## Find proccess id of server if already running in xterm
-psid=`pgrep -fi "xterm.*run.sh"`
+# psid=`pgrep -fi "xterm.*run.sh"`
+psid=`pgrep -fi "xfce4-terminal.*run.sh"`
+
 
 ## If psid not found start server, else exit
 if [ -z ${psid} ] 
