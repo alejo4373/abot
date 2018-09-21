@@ -6,13 +6,16 @@ class Bot {
     this.name = '';
     this.location = {};
     this.score = 0;
+    this.currentTask = null;
     this.state = {};
     this.inRangeNodes = [];
     this.target = null;
-    this.tasks = [this.register()];
+    this.tasks = [];
   }
 
   async register() {
+    console.log('this', this)
+    this.currentTask = 'register';
     let data = await cms.requestRegister();
     this.location = {
       x: data.status.location.x,
@@ -21,10 +24,12 @@ class Bot {
     this.state = data;
     this.name = data.status.id;
     logger.log('botLocation ==>', this.location)
-    this.tasks.push(this.scan());
+    this.tasks.push(this.scan);
   };
 
   async scan() {
+    console.log('this', this)
+    this.currentTask = 'scan';
     let data = await cms.requestScan(this.name)
     if (data.nodes.length) {
       this.inRangeNodes = data.nodes;
@@ -36,10 +41,12 @@ class Bot {
       this.claimNode(this.target)
     }
     // Regardless of if we have a target node move!!!
-    this.tasks.push(this.move());
+    this.tasks.push(this.move);
+    logger.log('tasks', this.tasks);
   };
 
   async move() {
+    this.currentTask = 'move';
     let path;
     if (this.target) {
       path = this.generatePathTowards(this.target)
@@ -52,11 +59,11 @@ class Bot {
         walked.push(crrStep)
       }
       logger.log('finalLocation =>', this.location)
-      this.tasks.push(this.mine());
+      this.tasks.push(this.mine);
 
     } else { //if no target then move vertically one square x + 1, like that for now
       let res = await cms.requestMove(this.location.x + 1, this.location.y)
-      this.tasks.push(this.scan())
+      this.tasks.push(this.scan)
     }
   };
 
@@ -132,6 +139,7 @@ class Bot {
   }
 
   async mine() {
+    this.currentTask = 'mine';
     let hitsResult = [];
     while (this.target.value > 0) {
       let crrHit = await cms.requestMine(this.name, this.target);
@@ -144,7 +152,12 @@ class Bot {
 
   release() { };
 
-  conquerMars() { };
+  conquerMars() {
+    this.tasks.push(this.register)
+    while (this.tasks.length >= 1) {
+      this.tasks.shift();
+    }
+  };
 
 
 

@@ -1,4 +1,9 @@
+global.logger = require('tracer').colorConsole({
+  format: "{{timestamp}} (in {{file}}:{{line}}) {{message}} ",
+  dateformat: "HH:MM:ss.L"
+});
 const Bot = require('../Bot');
+require('dotenv').config();
 
 describe('Bot class', () => {
   it('finds closest node to bot', () => {
@@ -51,7 +56,20 @@ describe('Bot class', () => {
     expect(path).toEqual(appropriatePath);
   })
 
-  it('network response location is updated after a move request', () => {
+  it.only('bot`s location is updated after a move request', async () => {
+    expect.assertions(2);
+    let bot = new Bot();
+    await bot.register();
+    let initialLocation = bot.location;
 
+    // Run the tasks in the queue
+    while(bot.currentTask !== 'move' && bot.tasks.length) {
+      console.log(bot.tasks)
+      let crrTask = bot.tasks.shift()
+      await crrTask();
+    }
+    let finalLocation = bot.location;
+    expect(initialLocation).toBe('initial')
+    expect(finalLocation).toBe('final')
   })
 })

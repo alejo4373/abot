@@ -26,5 +26,4 @@ then
 
 else
   echo "Server already running pid: ${psid}";
-  exit 1;
 fi
