@@ -23,9 +23,15 @@ const requestClaim = (callsign, node) => {
   return sendRequest('/claim', { callsign: callsign, node: node.id })
 }
 
+const requestMine = (callsign, node) => {
+  logger.log('mining node', node.id)
+  return sendRequest('/mine', { callsign, node: node.id })
+}
+
 module.exports = {
   requestRegister,
   requestScan,
   requestMove,
   requestClaim,
+  requestMine
 }

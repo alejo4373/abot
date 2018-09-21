@@ -5,6 +5,7 @@ class Bot {
   constructor() {
     this.name = '';
     this.location = {};
+    this.score = 0;
     this.state = {};
     this.inRangeNodes = [];
     this.target = null;
@@ -51,13 +52,12 @@ class Bot {
         walked.push(crrStep)
       }
       logger.log('finalLocation =>', this.location)
+      this.tasks.push(this.mine());
 
     } else { //if no target then move vertically one square x + 1, like that for now
       let res = await cms.requestMove(this.location.x + 1, this.location.y)
       this.tasks.push(this.scan())
     }
-
-
   };
 
   // Brute force path generation, not exploiting the fact the bot
@@ -131,9 +131,20 @@ class Bot {
     return closestNode;
   }
 
+  async mine() {
+    let hitsResult = [];
+    while (this.target.value > 0) {
+      let crrHit = await cms.requestMine(this.name, this.target);
+      hitsResult.push(crrHit);
+      this.target.value--;
+      this.score++;
+    }
+    logger.log('hitsResult ==> ', hitsResult)
+  };
+
   release() { };
-  mine(node) { };
-  conquerMarse() { };
+
+  conquerMars() { };
 
 
 
