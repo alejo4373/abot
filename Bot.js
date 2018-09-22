@@ -30,6 +30,7 @@ class Bot {
 
   async scan() {
     this.currentTask = 'scan';
+    logger.log('Scanning ====>')
     let data = await cms.requestScan(this.name)
     if (data.nodes.length) {
       this.inRangeNodes = data.nodes;
@@ -184,7 +185,11 @@ class Bot {
     while (this.tasks.length >= 1) {
       let crrTask = this.tasks.shift();
       crrTask = crrTask.bind(this);
-      await crrTask();
+      try {
+        await crrTask();
+      } catch (err) {
+        logger.log('[Error] ==>', err)
+      }
     }
   };
 
