@@ -56,7 +56,7 @@ describe('Bot class', () => {
     expect(path).toEqual(appropriatePath);
   })
 
-  it.only('bot`s location is updated after a move request', async () => {
+  it('bot`s location is updated after a move request', async () => {
     expect.assertions(1);
     let bot = new Bot();
     await bot.register();
