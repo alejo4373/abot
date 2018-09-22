@@ -37,8 +37,12 @@ class Bot {
       // I could claim at least 3 nodes in my range but I think it will be better
       // to claim closest node and then start moving towards it
       this.target = this.findClosestNode()
-      logger.log('inRangeNodes =>', this.inRangeNodes)
-      this.claimNode(this.target)
+
+      //If found node with value, claim it. Otherwise move
+      if (this.target) {
+        logger.log('inRangeNodes =>', this.inRangeNodes)
+        this.claimNode(this.target)
+      }
     }
     // Regardless of if we have a target node move!!!
     if (this.automatic) {
@@ -80,6 +84,7 @@ class Bot {
   async step(x, y) {
     let stepRes = await cms.requestMove(x, y, this.name)
     this.location = stepRes.status.location;
+    logger.log('moved to =>', this.location)
   }
 
   // Brute force path generation, not exploiting the fact the bot
@@ -139,15 +144,18 @@ class Bot {
     let leastDistance = null;
 
     nodes.forEach(node => {
-      let nodeX = node.location.x;
-      let nodeY = node.location.y;
-      let nodeDistance = Math.abs((nodeX - botX)) + Math.abs((nodeY - botY));
-      if (leastDistance === null) {
-        leastDistance = nodeDistance;
-        closestNode = node;
-      } else if (nodeDistance <= leastDistance) {
-        leastDistance = nodeDistance
-        closestNode = node;
+      //If we haven't exploited the node already
+      if (node.value > 0) {
+        let nodeX = node.location.x;
+        let nodeY = node.location.y;
+        let nodeDistance = Math.abs((nodeX - botX)) + Math.abs((nodeY - botY));
+        if (leastDistance === null) {
+          leastDistance = nodeDistance;
+          closestNode = node;
+        } else if (nodeDistance <= leastDistance) {
+          leastDistance = nodeDistance
+          closestNode = node;
+        }
       }
     })
     return closestNode;
@@ -162,9 +170,13 @@ class Bot {
       this.target.value--;
       this.score++;
     }
+    await this.release();
+    this.tasks.push(this.scan)
   };
 
-  release() { };
+  async release() {
+    await cms.requestRelease(this.name, this.target);
+  };
 
   async conquerMars(automatic) {
     this.automatic = automatic;

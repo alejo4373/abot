@@ -27,10 +27,16 @@ const requestMine = (callsign, node) => {
   return sendRequest('/mine', { callsign, node: node.id })
 }
 
+const requestRelease = (callsign, node) => {
+  logger.log('Releasing node', node.id)
+  return sendRequest('/release', { callsign, node: node.id })
+}
+
 module.exports = {
   requestRegister,
   requestScan,
   requestMove,
   requestClaim,
-  requestMine
+  requestMine,
+  requestRelease,
 }

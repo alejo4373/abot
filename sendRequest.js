@@ -22,7 +22,12 @@ const sendRequest = (path, data) => {
       res.on('end', () => {
         // Lowercased response since I want to be consistent an realize Nodes Id do come with upper case characters
         let formatedRes = response.join('').toLowerCase();
-        resolve(JSON.parse(formatedRes))
+        let parsedRes = JSON.parse(formatedRes);
+        if (!parsedRes.errormsg) {
+          resolve(parsedRes)
+        } else {
+          reject(parsedRes)
+        }
       });
     });
 
