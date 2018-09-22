@@ -61,9 +61,17 @@ class Bot {
         this.tasks.push(this.mine);
       }
 
-    } else { //if no target then move vertically one square x + 1, like that for now
-      // let res = await cms.requestMove(this.location.x + 1, this.location.y)
-      // this.tasks.push(this.scan)
+    } else { //if no target then move randomly and repeat scan
+      let x = this.location.x;
+      let y = this.location.y;
+      if ((x >= 0 && x < 100) && (y >= 0 && y < 100)) {
+        let possible = [-1, 0, 1]
+        let randomX = possible[Math.floor(Math.random() * 3)];
+        let randomY = possible[Math.floor(Math.random() * 3)];
+        await this.step(this.location.x + randomX, this.location.y + randomY)
+        this.tasks.push(this.scan)
+      }
+
     }
 
 
