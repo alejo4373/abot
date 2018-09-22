@@ -56,13 +56,17 @@ describe('Bot class', () => {
     expect(path).toEqual(appropriatePath);
   })
 
-  it('bot`s location is updated after a move request', async () => {
+  it('bot moves and reaches a target node', async () => {
     expect.assertions(1);
     let bot = new Bot();
     await bot.register();
-    let initialLocation = bot.location;
-    await bot.step(initialLocation.x + 1, initialLocation.y + 1)
-    let finalLocation = bot.location;
-    expect(finalLocation).not.toEqual(initialLocation)
+    bot.target = {
+      id: '08a1838a-b887-4270-88f2-feb170b03993',
+      location: { x: 93, y: 96 },
+      value: 12,
+      claimed: false
+    } 
+    await bot.move();
+    expect(bot.location).toEqual(bot.target.location);
   })
 })
