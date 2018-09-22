@@ -9,6 +9,4 @@ const Bot = require('./Bot');
 let myBot = new Bot('Charlie');
 
 logger.log('=========');
-// myBot.conquerMars();
-myBot.register()
-console.log(myBot.tasks)
+myBot.conquerMars(true);

@@ -6,7 +6,7 @@ class Bot {
     this.name = '';
     this.location = {};
     this.score = 0;
-    this.currentTask = null;
+    this.automatic = false;
     this.state = {};
     this.inRangeNodes = [];
     this.target = null;
@@ -14,7 +14,6 @@ class Bot {
   }
 
   async register() {
-    console.log('this', this)
     this.currentTask = 'register';
     let data = await cms.requestRegister();
     this.location = {
@@ -24,11 +23,12 @@ class Bot {
     this.state = data;
     this.name = data.status.id;
     logger.log('botLocation ==>', this.location)
-    this.tasks.push(this.scan);
+    if (this.automatic) {
+      this.tasks.push(this.scan);
+    }
   };
 
   async scan() {
-    console.log('this', this)
     this.currentTask = 'scan';
     let data = await cms.requestScan(this.name)
     if (data.nodes.length) {
@@ -41,8 +41,9 @@ class Bot {
       this.claimNode(this.target)
     }
     // Regardless of if we have a target node move!!!
-    this.tasks.push(this.move);
-    logger.log('tasks', this.tasks);
+    if (this.automatic) {
+      this.tasks.push(this.move);
+    }
   };
 
   async move() {
@@ -50,22 +51,28 @@ class Bot {
     let path;
     if (this.target) {
       path = this.generatePathTowards(this.target)
-      let walked = [];
 
       //Asynchronous Loop
       for (let step of path) {
-        let crrStep = await cms.requestMove(step.x, step.y, this.name)
-        this.location = crrStep.status.location
-        walked.push(crrStep)
+        await this.step(step.x, step.y)
       }
-      logger.log('finalLocation =>', this.location)
-      this.tasks.push(this.mine);
+
+      if (this.automatic) {
+        this.tasks.push(this.mine);
+      }
 
     } else { //if no target then move vertically one square x + 1, like that for now
-      let res = await cms.requestMove(this.location.x + 1, this.location.y)
-      this.tasks.push(this.scan)
+      // let res = await cms.requestMove(this.location.x + 1, this.location.y)
+      // this.tasks.push(this.scan)
     }
+
+
   };
+
+  async step(x, y) {
+    let stepRes = await cms.requestMove(x, y, this.name)
+    this.location = stepRes.status.location;
+  }
 
   // Brute force path generation, not exploiting the fact the bot
   // can move diagonally. 
@@ -147,15 +154,17 @@ class Bot {
       this.target.value--;
       this.score++;
     }
-    logger.log('hitsResult ==> ', hitsResult)
   };
 
   release() { };
 
-  conquerMars() {
+  async conquerMars(automatic) {
+    this.automatic = automatic;
     this.tasks.push(this.register)
     while (this.tasks.length >= 1) {
-      this.tasks.shift();
+      let crrTask = this.tasks.shift();
+      crrTask = crrTask.bind(this);
+      await crrTask();
     }
   };
 

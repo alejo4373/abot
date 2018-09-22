@@ -57,19 +57,12 @@ describe('Bot class', () => {
   })
 
   it.only('bot`s location is updated after a move request', async () => {
-    expect.assertions(2);
+    expect.assertions(1);
     let bot = new Bot();
     await bot.register();
     let initialLocation = bot.location;
-
-    // Run the tasks in the queue
-    while(bot.currentTask !== 'move' && bot.tasks.length) {
-      console.log(bot.tasks)
-      let crrTask = bot.tasks.shift()
-      await crrTask();
-    }
+    await bot.step(initialLocation.x + 1, initialLocation.y + 1)
     let finalLocation = bot.location;
-    expect(initialLocation).toBe('initial')
-    expect(finalLocation).toBe('final')
+    expect(finalLocation).not.toEqual(initialLocation)
   })
 })

@@ -10,7 +10,6 @@ const requestMove = (x, y, callsign) => {
     x: x + '',
     y: y + ''
   }
-  logger.log('requestMove => ', 'x:', x, 'y:', y)
   return sendRequest('/move', payload)
 }
 
